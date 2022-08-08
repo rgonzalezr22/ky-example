@@ -18,6 +18,8 @@ on:
   pull_request:
     branches:
       - develop
+    paths:
+      - "network/**"
     types:
       - closed
       - opened
