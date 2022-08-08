@@ -20,7 +20,7 @@ on:
       - develop
     paths:
       - "network/**"
-      - './dev-workflow.yaml'
+      - './dev-network-workflow.yaml'
     types:
       - closed
       - opened
