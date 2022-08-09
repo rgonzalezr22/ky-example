@@ -28,7 +28,7 @@ on:
 
 env:
   SERVICE_ACCOUNT: agus-dev-github-impersonate@lgke-app-gke.iam.gserviceaccount.com
-  WIF_PROVIDER: projects/927779758991/locations/global/workloadIdentityPools/agus-dev-iwip/providers/agus-iac-github-fip
+  WIF_PROVIDER: //iam.googleapis.com/projects/927779758991/locations/global/workloadIdentityPools/agus-dev-iwip/providers/agus-iac-github-fip
   BACKEND_BUCKET: agus-dev-iac-core-tf
   SSH_AUTH_SOCK: /tmp/ssh_agent.sock
   ENV: dev
