@@ -87,11 +87,18 @@ module "iac-tf-sa" {
   prefix      = local.prefix
   # allow SA used by CI/CD workflow to impersonate this SA
   iam = {
-    "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.iac-sa-impersonate.iam_email, null)
-    ])
+    "roles/iam.serviceAccountTokenCreator" = [module.iac-sa-impersonate.iam_email]
   }
   iam_storage_roles = {
     (module.iac-tf-gcs.name) = ["roles/storage.admin"]
+  }
+  iam_project_roles = {
+    (var.project_id) = ["roles/compute.instanceAdmin.v1",
+      "roles/compute.loadBalancerAdmin",
+      "roles/compute.networkAdmin",
+      "roles/container.admin",
+      "roles/monitoring.admin",
+      "roles/logging.admin"
+    ]
   }
 }
