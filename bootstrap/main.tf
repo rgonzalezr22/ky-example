@@ -96,6 +96,7 @@ module "iac-tf-sa" {
     (var.project_id) = ["roles/compute.instanceAdmin.v1",
       "roles/compute.loadBalancerAdmin",
       "roles/compute.networkAdmin",
+      "roles/compute.securityAdmin",
       "roles/container.admin",
       "roles/monitoring.admin",
       "roles/logging.admin"
