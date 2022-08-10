@@ -69,6 +69,7 @@ jobs:
       # run Terraform init/validate/plan
       - id: tf-init
         name: Terraform init
+        working-directory: network
         run: |
           terraform init -backend-config=bucket=${{ env.BACKEND_BUCKET }} -no-color
       - id: tf-validate
@@ -77,13 +78,15 @@ jobs:
 
       - id: tf-plan
         name: Terraform plan
+        working-directory: network
         continue-on-error: true
         run: |
-          terraform plan -input=false -var-file=../vars/${{ env.ENV }}/commons.tfvars -var-file=../vars/${{ env.ENV }}/network.tfvars -out tfplan -no-color
+          terraform plan -input=false -var-file=./vars/${{ env.ENV }}/commons.tfvars -var-file=./vars/${{ env.ENV }}/network.tfvars -out tfplan -no-color
       
       - id: tf-apply
         if: github.event.pull_request.merged == true
         name: Terraform apply
+        working-directory: network
         continue-on-error: true
         run: |
           terraform apply -input=false -auto-approve -no-color ../plan.out
