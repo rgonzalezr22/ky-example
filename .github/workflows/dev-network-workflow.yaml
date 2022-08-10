@@ -70,7 +70,7 @@ jobs:
       - id: tf-init
         name: Terraform init
         run: |
-          terraform init -backend=bucket=${{ env.BACKEND_BUCKET }} -no-color
+          terraform init -backend-config=bucket=${{ env.BACKEND_BUCKET }} -no-color
       - id: tf-validate
         name: Terraform validate
         run: terraform validate -no-color
