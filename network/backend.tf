@@ -20,4 +20,3 @@ terraform {
     impersonate_service_account = "agus-dev-iac-sa@lgke-app-gke.iam.gserviceaccount.com"
   }
 }
-

@@ -20,7 +20,7 @@ on:
       - develop
     paths:
       - network/**
-      - ./dev-network-workflow.yaml
+      - .github/workflows/dev-network-workflow.yaml
     types:
       - closed
       - opened
@@ -89,7 +89,7 @@ jobs:
         working-directory: network
         continue-on-error: true
         run: |
-          terraform apply -input=false -auto-approve -no-color ../plan.out
+          terraform apply -input=false -auto-approve -no-color tfplan
       
       - id: pr-comment
         name: Post comment to Pull Request
