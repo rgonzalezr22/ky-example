@@ -15,11 +15,25 @@
  */
 
 provider "google" {
+  impersonate_service_account = "agus-dev-iac-sa@lgke-app-gke.iam.gserviceaccount.com"
   project = var.project_id
-  region  = var.region
 }
 
 provider "google-beta" {
+  impersonate_service_account = "agus-dev-iac-sa@lgke-app-gke.iam.gserviceaccount.com"
   project = var.project_id
-  region  = var.region
+}
+
+terraform {
+  required_version = ">= 1.1.0"
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = ">= 4.20.0"
+    }
+    google-beta = {
+      source  = "hashicorp/google-beta"
+      version = ">= 4.20.0"
+    }
+  }
 }
