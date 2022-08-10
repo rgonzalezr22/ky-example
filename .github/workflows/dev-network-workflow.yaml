@@ -21,6 +21,7 @@ on:
     paths:
       - network/**
       - .github/workflows/dev-network-workflow.yaml
+      - vars/**/network.tfvars
     types:
       - closed
       - opened
