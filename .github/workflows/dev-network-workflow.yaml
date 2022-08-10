@@ -28,7 +28,7 @@ on:
 
 env:
   SERVICE_ACCOUNT: agus-dev-github-impersonate@lgke-app-gke.iam.gserviceaccount.com
-  WIF_PROVIDER: https://iam.googleapis.com/projects/927779758991/locations/global/workloadIdentityPools/agus-dev-iwip/providers/agus-iac-github-fip
+  WIF_PROVIDER: projects/927779758991/locations/global/workloadIdentityPools/agus-dev-iwip/providers/agus-iac-github-fip
   BACKEND_BUCKET: agus-dev-iac-core-tf
   ENV: dev
   TF_VERSION: 1.1.7
@@ -50,8 +50,8 @@ jobs:
         name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v0
         with:
-          workload_identity_provider: $${{ env.WIF_PROVIDER }}
-          service_account: $${{ env.SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ env.WIF_PROVIDER }}
+          service_account: ${{ env.SERVICE_ACCOUNT }}
           access_token_lifetime: 3600s
 
       - id: gcp-sdk
@@ -64,13 +64,13 @@ jobs:
         name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
         with:
-          terraform_version: $${{ env.TF_VERSION }}
+          terraform_version: ${{ env.TF_VERSION }}
 
       # run Terraform init/validate/plan
       - id: tf-init
         name: Terraform init
         run: |
-          terraform init -backend=bucket=$${{ env.BACKEND_BUCKET }} -no-color
+          terraform init -backend=bucket=${{ env.BACKEND_BUCKET }} -no-color
       - id: tf-validate
         name: Terraform validate
         run: terraform validate -no-color
@@ -79,7 +79,7 @@ jobs:
         name: Terraform plan
         continue-on-error: true
         run: |
-          terraform plan -input=false -var-file=../vars/$${{ env.ENV }}/commons.tfvars -var-file=../vars/$${{ env.ENV }}/network.tfvars -out tfplan -no-color
+          terraform plan -input=false -var-file=../vars/${{ env.ENV }}/commons.tfvars -var-file=../vars/${{ env.ENV }}/network.tfvars -out tfplan -no-color
       
       - id: tf-apply
         if: github.event.pull_request.merged == true
@@ -93,24 +93,24 @@ jobs:
         uses: actions/github-script@v6
         if: github.event_name == 'pull_request'
         env:
-          PLAN: terraform\n$${{ steps.tf-plan.outputs.stdout }}
+          PLAN: terraform\n${{ steps.tf-plan.outputs.stdout }}
         with:
           script: |
-            const output = `#### Terraform Initialization ⚙️\`$${{ steps.tf-init.outcome }}\`
-            #### Terraform Validation 🤖\`$${{ steps.tf-validate.outcome }}\`
+            const output = `#### Terraform Initialization ⚙️\`${{ steps.tf-init.outcome }}\`
+            #### Terraform Validation 🤖\`${{ steps.tf-validate.outcome }}\`
             <details><summary>Validation Output</summary>
             \`\`\`\n
-            $${{ steps.tf-validate.outputs.stdout }}
+            ${{ steps.tf-validate.outputs.stdout }}
             \`\`\`
             </details>
-            #### Terraform Plan 📖\`$${{ steps.tf-plan.outcome }}\`
+            #### Terraform Plan 📖\`${{ steps.tf-plan.outcome }}\`
             <details><summary>Show Plan</summary>
             \`\`\`\n
-            $${process.env.PLAN}
+            ${process.env.PLAN}
             \`\`\`
             </details>
-            #### Terraform Apply 📖\`$${{ steps.tf-apply.outcome }}\`
-            *Pusher: @$${{ github.actor }}, Action: \`$${{ github.event_name }}\`, Working Directory: \`$${{ env.tf_actions_working_dir }}\`, Workflow: \`$${{ github.workflow }}\`*`;
+            #### Terraform Apply 📖\`${{ steps.tf-apply.outcome }}\`
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*`;
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
