@@ -29,6 +29,7 @@ on:
 
 env:
   SERVICE_ACCOUNT: agus-dev-github-impersonate@lgke-app-gke.iam.gserviceaccount.com
+  SERVICE_ACCOUNT_IMPERSONATE: agus-dev-github-impersonate@lgke-app-gke.iam.gserviceaccount.com
   WIF_PROVIDER: projects/927779758991/locations/global/workloadIdentityPools/agus-dev-iwip/providers/agus-iac-github-fip
   BACKEND_BUCKET: agus-dev-iac-core-tf
   ENV: dev
@@ -52,7 +53,7 @@ jobs:
         uses: google-github-actions/auth@v0
         with:
           workload_identity_provider: ${{ env.WIF_PROVIDER }}
-          service_account: ${{ env.SERVICE_ACCOUNT }}
+          service_account: ${{ env.SERVICE_ACCOUNT_IMPERSONATE }}
           access_token_lifetime: 3600s
 
       - id: gcp-sdk
@@ -82,7 +83,7 @@ jobs:
         working-directory: network
         continue-on-error: true
         run: |
-          terraform plan -input=false -var-file=../vars/${{ env.ENV }}/commons.tfvars -var-file=../vars/${{ env.ENV }}/network.tfvars -out tfplan -no-color
+          terraform plan -input=false -var-file=../vars/${{ env.ENV }}/commons.tfvars -var-file=../vars/${{ env.ENV }}/network.tfvars -out tfplan -no-color -destroy
       
       - id: tf-apply
         if: github.event.pull_request.merged == true
