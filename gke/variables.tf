@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ 
+variable "project_id" {
+  type = string
+}
 
-terraform {
-  required_version = ">= 1.1.0"
-  required_providers {
-    google = {
-      source  = "hashicorp/google"
-      version = ">= 4.20.0"
-    }
-    google-beta = {
-      source  = "hashicorp/google-beta"
-      version = ">= 4.20.0"
-    }
-  }
+variable "region" {
+  type = string
+}
+
+variable "prefix" {
+  type = string
+}
+variable "env" {
+  type = string
 }

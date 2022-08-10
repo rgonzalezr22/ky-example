@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
+provider "google" {
+  impersonate_service_account = "agus-dev-iac-sa@lgke-app-gke.iam.gserviceaccount.com"
+  project = var.project_id
+}
+
+provider "google-beta" {
+  impersonate_service_account = "agus-dev-iac-sa@lgke-app-gke.iam.gserviceaccount.com"
+  project = var.project_id
+}
+
 terraform {
   required_version = ">= 1.1.0"
   required_providers {

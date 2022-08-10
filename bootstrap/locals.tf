@@ -38,4 +38,22 @@ locals {
       lookup(local.identity_providers_defs, v.issuer, {})
     )
   }
+
+  # Outputs
+  _tpl_backend = "${path.module}/templates/backend.tf.tpl"
+  backend = templatefile(local._tpl_backend, {
+    bucket = module.iac-tf-gcs.name
+    sa     = module.iac-tf-sa.email
+  })
+
+  tfvars_globals = {
+    globals = {
+      project_id     = var.project_id
+      project_number = data.google_project.project.number
+      prefix         = local.prefix
+      env            = var.env
+      output_bucket  = module.iac-outputs-gcs.name
+    }
+  }
+
 }

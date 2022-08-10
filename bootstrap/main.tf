@@ -44,15 +44,6 @@ resource "google_iam_workload_identity_pool_provider" "default" {
   }
 }
 
-//state bucket
-module "iac-tf-gcs" {
-  source     = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/gcs"
-  project_id = var.project_id
-  name       = "iac-core-tf"
-  prefix     = local.prefix
-  versioning = true
-}
-
 # SAs used by CI/CD workflows to impersonate automation SAs
 module "iac-sa-impersonate" {
   source      = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/iam-service-account"
@@ -102,4 +93,22 @@ module "iac-tf-sa" {
       "roles/logging.admin"
     ]
   }
+}
+
+//state bucket
+module "iac-tf-gcs" {
+  source     = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/gcs"
+  project_id = var.project_id
+  name       = "iac-core-tf"
+  prefix     = local.prefix
+  versioning = true
+}
+
+//state bucket
+module "iac-outputs-gcs" {
+  source     = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/gcs"
+  project_id = var.project_id
+  name       = "iac-core-outputs"
+  prefix     = local.prefix
+  versioning = true
 }
