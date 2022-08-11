@@ -25,7 +25,7 @@ module "firewall" {
   source       = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpc-firewall"
   project_id   = var.globals.project_id
   network      = module.vpc.name
-  admin_ranges = var.firewall_admin_ranges
+  admin_ranges = var.admin_ranges
 }
 
 module "nat" {
