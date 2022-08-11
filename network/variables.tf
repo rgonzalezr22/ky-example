@@ -37,6 +37,6 @@ variable "subnets" {
   }))
 }
 
-variable "firewall_admin_ranges" {
+variable "admin_ranges" {
   type = list(string)
 }

@@ -27,6 +27,7 @@ locals {
          subnet_self_links = module.vpc.subnet_self_links
       }
       region = var.region
+      admin_ranges = var.admin_ranges
     }
   }
 }
