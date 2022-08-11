@@ -95,7 +95,7 @@ jobs:
         working-directory: ${{ env.CURRENT_STAGE }}
         continue-on-error: true
         run: |
-          terraform plan -input=false -var-file=../vars/${{ env.ENV }}/network.tfvars -out tfplan -no-color
+          terraform plan -input=false -var-file=../vars/${{ env.ENV }}/${{ env.CURRENT_STAGE }}.tfvars -out tfplan -no-color
       
       - id: tf-apply
         if: github.event.pull_request.merged == true

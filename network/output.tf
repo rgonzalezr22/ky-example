@@ -13,3 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+resource "google_storage_bucket_object" "tfvars" {
+  bucket  = module.iac-outputs-gcs.name
+  name    = "tfvars/network.auto.tfvars.json"
+  content = jsonencode(local.tfvars_network)
+}
+
+output "network" {
+  value = local.tfvars_network
+}
