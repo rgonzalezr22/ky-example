@@ -13,18 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-variable "project_id" {
-  type = string
+
+variable "globals" {
+  type = object({
+    env            = string,
+    output_bucket  = string,
+    prefix         = string,
+    project_id     = string,
+    project_number = string
+  })
 }
 
-variable "region" {
-  type = string
+variable "network" {
+  type = object({
+    vpc = object({
+      name                    = string,
+      self_link               = string,
+      subnet_ips              = string,
+      subnet_regions          = string,
+      subnet_secondary_ranges = any,
+      subnet_self_links       = any,
+    })
+    region       = string
+    admin_ranges = list(string)
+  })
 }
 
-variable "prefix" {
-  type = string
+variable "nodepools" {
+  type = list(object({
+    location = string,
+    name     = string
+  }))
 }
-variable "env" {
+variable "cluster_location" {
   type = string
 }
