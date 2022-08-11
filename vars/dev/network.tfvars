@@ -17,3 +17,4 @@ subnets = [
       secondary_ip_range = {}
     }
   ]
+  firewall_admin_ranges = ["10.0.0.0/8"]

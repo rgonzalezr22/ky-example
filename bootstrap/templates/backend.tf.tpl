@@ -22,9 +22,11 @@ terraform {
 }
 provider "google" {
   impersonate_service_account = "${sa}"
+  project = "${project}"
 }
 provider "google-beta" {
   impersonate_service_account = "${sa}"
+  project = "${project}"
 }
 
 # end backend.tf for
