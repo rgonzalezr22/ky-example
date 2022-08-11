@@ -15,5 +15,5 @@
  */
 
 locals {
-  prefix = join("-", compact([var.prefix, var.env]))
+  prefix = var.globals.prefix
 }

@@ -28,11 +28,13 @@ on:
       - synchronize
 
 env:
-  SERVICE_ACCOUNT: agus-dev-github-impersonate@lgke-app-gke.iam.gserviceaccount.com
-  SERVICE_ACCOUNT_IMPERSONATE: agus-dev-github-impersonate@lgke-app-gke.iam.gserviceaccount.com
-  WIF_PROVIDER: projects/927779758991/locations/global/workloadIdentityPools/agus-dev-iwip/providers/agus-iac-github-fip
-  BACKEND_BUCKET: agus-dev-iac-core-tf
+  SERVICE_ACCOUNT: pugsite-dev-iac-sa@lgke-app-gke.iam.gserviceaccount.com
+  SERVICE_ACCOUNT_IMPERSONATE: pugsite-dev-github-impersonate@lgke-app-gke.iam.gserviceaccount.com
+  WIF_PROVIDER: projects/927779758991/locations/global/workloadIdentityPools/pugsite-dev-iwip/providers/pugsite-iac-github-fip
+  BACKEND_BUCKET: pugsite-dev-iac-core-tf
+  OUTPUTS_BUCKET: pugsite-dev-iac-core-outputs
   ENV: dev
+  CURRENT_STAGE: network
   TF_VERSION: 1.1.7
 
 jobs:
@@ -61,6 +63,15 @@ jobs:
         uses: google-github-actions/setup-gcloud@v0
         with:
           install_components: alpha
+      
+      # copy provider and tfvars files
+      - id: tf-config
+        name: Copy Terraform output files
+        working-directory: ${{ env.CURRENT_STAGE }}
+        run: |
+          gcloud alpha storage cp "gs://${{env.OUTPUTS_BUCKET}}/templates/backend.tf" .
+          gcloud alpha storage cp -r "gs://${{env.OUTPUTS_BUCKET}}/tfvars" .
+          cp tfvars/* .
 
       - id: tf-setup
         name: Set up Terraform
@@ -71,24 +82,25 @@ jobs:
       # run Terraform init/validate/plan
       - id: tf-init
         name: Terraform init
-        working-directory: network
+        working-directory: ${{ env.CURRENT_STAGE }}
         run: |
-          terraform init -backend-config=bucket=${{ env.BACKEND_BUCKET }} -no-color
+          terraform init -backend-config=prefix=${{ env.CURRENT_STAGE }}/terraform.tfstate -no-color
+          
       - id: tf-validate
         name: Terraform validate
         run: terraform validate -no-color
 
       - id: tf-plan
         name: Terraform plan
-        working-directory: network
+        working-directory: ${{ env.CURRENT_STAGE }}
         continue-on-error: true
         run: |
-          terraform plan -input=false -var-file=../vars/${{ env.ENV }}/commons.tfvars -var-file=../vars/${{ env.ENV }}/network.tfvars -out tfplan -no-color -destroy
+          terraform plan -input=false -var-file=../vars/${{ env.ENV }}/network.tfvars -out tfplan -no-color
       
       - id: tf-apply
         if: github.event.pull_request.merged == true
         name: Terraform apply
-        working-directory: network
+        working-directory: ${{ env.CURRENT_STAGE }}
         continue-on-error: true
         run: |
           terraform apply -input=false -auto-approve -no-color tfplan

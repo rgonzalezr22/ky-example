@@ -14,21 +14,29 @@
  * limitations under the License.
  */
 
-variable "project_id" {
-  type = string
+variable "globals" {
+  type = object({
+    env            = string,
+    output_bucket  = string,
+    prefix         = string,
+    project_id     = string,
+    project_number = string
+  })
 }
 
 variable "region" {
   type = string
 }
 
-variable "prefix" {
-  type = string
-}
-variable "env" {
-  type = string
+variable "subnets" {
+  type = list(object({
+    ip_cidr_range      = string,
+    name               = string
+    region             = string
+    secondary_ip_range = any
+  }))
 }
 
-variable "subnets" {
-  type = any
+variable "firewall_admin_ranges" {
+  type = list(string)
 }

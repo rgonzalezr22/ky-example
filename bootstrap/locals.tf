@@ -44,6 +44,7 @@ locals {
   backend = templatefile(local._tpl_backend, {
     bucket = module.iac-tf-gcs.name
     sa     = module.iac-tf-sa.email
+    project = var.project_id
   })
 
   tfvars_globals = {

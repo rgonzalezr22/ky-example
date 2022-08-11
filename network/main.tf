@@ -16,21 +16,21 @@
 
 module "vpc" {
   source     = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpc"
-  project_id = var.project_id
+  project_id = var.globals.project_id
   name       = "${local.prefix}-vpc"
   subnets    = var.subnets
 }
 
 module "firewall" {
   source       = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpc-firewall"
-  project_id   = var.project_id
+  project_id   = var.globals.project_id
   network      = module.vpc.name
-  admin_ranges = ["10.0.0.0/8"]
+  admin_ranges = var.firewall_admin_ranges
 }
 
 module "nat" {
   source         = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-cloudnat"
-  project_id     = var.project_id
+  project_id     = var.globals.project_id
   region         = var.region
   name           = "default"
   router_network = module.vpc.name
