@@ -26,6 +26,7 @@ locals {
          subnet_secondary_ranges = module.vpc.subnet_secondary_ranges
          subnet_self_links = module.vpc.subnet_self_links
       }
+      region = var.region
     }
   }
 }
