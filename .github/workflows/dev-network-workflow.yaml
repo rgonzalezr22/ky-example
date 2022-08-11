@@ -71,6 +71,7 @@ jobs:
         run: |
           gcloud alpha storage cp "gs://${{env.OUTPUTS_BUCKET}}/templates/backend.tf" .
           gcloud alpha storage cp -r "gs://${{env.OUTPUTS_BUCKET}}/tfvars" .
+          cp tfvars/* .
 
       - id: tf-setup
         name: Set up Terraform

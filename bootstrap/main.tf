@@ -65,9 +65,9 @@ module "iac-sa-impersonate" {
   iam_project_roles = {
     (var.project_id) = ["roles/logging.logWriter"]
   }
-  #iam_storage_roles = {
-  #  (module.automation-tf-output-gcs.name) = ["roles/storage.objectViewer"]
-  #}
+  iam_storage_roles = {
+    (module.iac-outputs-gcs.name) = ["roles/storage.objectViewer"]
+  }
 }
 
 module "iac-tf-sa" {
