@@ -15,7 +15,7 @@
  */
 
 resource "google_storage_bucket_object" "tfvars" {
-  bucket  = module.iac-outputs-gcs.name
+  bucket  = var.globals.output_bucket
   name    = "tfvars/network.auto.tfvars.json"
   content = jsonencode(local.tfvars_network)
 }
