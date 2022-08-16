@@ -30,7 +30,7 @@ module "gke_cluster" {
   private_cluster_config = {
     enable_private_nodes    = true
     enable_private_endpoint = true
-    master_ipv4_cidr_block  = "192.168.0.0/28" # var.network.vpc.subnet_secondary_ranges["us-central1/gke-uc1"].services
+    master_ipv4_cidr_block  = "192.168.1.0/28" # var.network.vpc.subnet_secondary_ranges["us-central1/gke-uc1"].services
     master_global_access    = false
   }
   labels = {
