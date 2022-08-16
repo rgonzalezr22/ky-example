@@ -14,34 +14,35 @@
  * limitations under the License.
  */
 
-module "gke-cluster" {
+module "gke_cluster" {
   source                    = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/gke-cluster"
-  project_id                = var.project_id
-  name                      = "pugsite-cluster"
-  location                  = "europe-west1-b"
-  network                   = var.vpc.self_link
-  subnetwork                = var.subnet.self_link
+  project_id                = var.globals.project_id
+  name                      = "${var.globals.prefix}-gke-cluster"
+  location                  = var.cluster_location
+  network                   = var.network.vpc.self_link
+  subnetwork                = var.network.vpc.subnet_self_links["us-central1/gke-uc1"]
   secondary_range_pods      = "pods"
   secondary_range_services  = "services"
   default_max_pods_per_node = 32
   master_authorized_ranges = {
-    internal-vms = "10.0.0.0/8"
+    internal-vms = var.network.admin_ranges[0]
   }
   private_cluster_config = {
     enable_private_nodes    = true
     enable_private_endpoint = true
-    master_ipv4_cidr_block  = "192.168.0.0/28"
+    master_ipv4_cidr_block  = "192.168.0.0/28" # var.network.vpc.subnet_secondary_ranges["us-central1/gke-uc1"].services
     master_global_access    = false
   }
   labels = {
-    environment = "dev"
+    environment = var.globals.env
   }
 }
 
-module "cluster-1-nodepool-1" {
+module "cluster_nodepool_1" {
   source                      = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/gke-nodepool"
-  project_id                  = var.project_id
-  cluster_name                = "cluster-1"
-  location                    = "europe-west1-b"
-  name                        = "nodepool-1"
+  project_id                  = var.globals.project_id
+  cluster_name                = module.gke_cluster.name
+  location                    = var.nodepools[0].location
+  name                        = var.nodepools[0].name
+  node_service_account_create = true
 }
