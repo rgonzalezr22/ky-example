@@ -29,8 +29,8 @@ variable "network" {
     vpc = object({
       name                    = string,
       self_link               = string,
-      subnet_ips              = string,
-      subnet_regions          = string,
+      subnet_ips              = any,
+      subnet_regions          = any,
       subnet_secondary_ranges = any,
       subnet_self_links       = any,
     })
