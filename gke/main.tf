@@ -20,7 +20,7 @@ module "gke_cluster" {
   name                      = "${var.globals.prefix}-gke-cluster"
   location                  = var.cluster_location
   network                   = var.network.vpc.self_link
-  subnetwork                = var.network.vpc.subnet_self_links["us-central1/gke-uc1"].self_link
+  subnetwork                = var.network.vpc.subnet_self_links["us-central1/gke-uc1"]
   secondary_range_pods      = "pods"
   secondary_range_services  = "services"
   default_max_pods_per_node = 32
