@@ -1,9 +1,9 @@
 
 nodepools=[
     {
-        location = ""
-        name = 
+        location = "us-central1-a"
+        name = "pugsite-np"
     }
 ]
 
-cluster_location = ""
+cluster_location = "us-central1-a"
