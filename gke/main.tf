@@ -40,9 +40,10 @@ module "gke_cluster" {
 
 module "cluster_nodepool_1" {
   source                      = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/gke-nodepool"
+  for_each                    = var.nodepools
   project_id                  = var.globals.project_id
   cluster_name                = module.gke_cluster.name
-  location                    = var.nodepools[0].location
-  name                        = var.nodepools[0].name
+  location                    = each.value.location
+  name                        = each.value.name
   node_service_account_create = true
 }
