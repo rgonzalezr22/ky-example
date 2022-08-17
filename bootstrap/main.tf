@@ -90,7 +90,10 @@ module "iac-tf-sa" {
       "roles/compute.securityAdmin",
       "roles/container.admin",
       "roles/monitoring.admin",
-      "roles/logging.admin"
+      "roles/storage.admin",
+      "roles/logging.admin",
+      "roles/iam.serviceAccountUser",
+      "roles/iam.serviceAccountAdmin"
     ]
   }
 }

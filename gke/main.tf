@@ -40,9 +40,24 @@ module "gke_cluster" {
 
 module "cluster_nodepool_1" {
   source                      = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/gke-nodepool"
+  for_each                    = {  for index, np in var.nodepools: np.name => np }
   project_id                  = var.globals.project_id
   cluster_name                = module.gke_cluster.name
-  location                    = var.nodepools[0].location
-  name                        = var.nodepools[0].name
+  location                    = each.value.location
+  name                        = each.value.name
   node_service_account_create = true
+}
+
+module "bastion-vm" {
+  source     = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/compute-vm"
+  project_id = var.globals.project_id
+  zone     = var.nodepools[0].location
+  name       = "gke-bastion"
+  network_interfaces = [{
+    network    = var.network.vpc.self_link
+    subnetwork = var.network.vpc.subnet_self_links["us-central1/gke-uc1"]
+    nat        = true
+    addresses  = null
+  }]
+  service_account_create = true
 }
