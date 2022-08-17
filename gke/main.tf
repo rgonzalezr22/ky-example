@@ -40,7 +40,7 @@ module "gke_cluster" {
 
 module "cluster_nodepool_1" {
   source                      = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/gke-nodepool"
-  for_each                    = {  for index, np in var.nodepools: np.name => np }
+  for_each                    = { for index, np in var.nodepools : np.name => np }
   project_id                  = var.globals.project_id
   cluster_name                = module.gke_cluster.name
   location                    = each.value.location
@@ -51,13 +51,35 @@ module "cluster_nodepool_1" {
 module "bastion-vm" {
   source     = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/compute-vm"
   project_id = var.globals.project_id
-  zone     = var.nodepools[0].location
+  zone       = var.nodepools[0].location
   name       = "gke-bastion"
   network_interfaces = [{
     network    = var.network.vpc.self_link
     subnetwork = var.network.vpc.subnet_self_links["us-central1/gke-uc1"]
-    nat        = true
+    nat        = false
     addresses  = null
   }]
-  service_account_create = true
+  service_account = module.gke_bastion_sa.email
+}
+
+# Sergice account for bastions
+module "gke_bastion_sa" {
+  source      = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/iam-service-account"
+  project_id  = var.globals.project_id
+  name        = "gke-bastion-sa"
+  description = ""
+  prefix      = var.globals.prefix
+  # allow SA used by CI/CD workflow to impersonate this SA
+  iam               = {}
+  iam_storage_roles = {}
+  iam_project_roles = {
+    (var.globals.project_id) = [
+      "roles/compute.instanceAdmin.v1",
+      "roles/container.admin",
+      "roles/storage.admin",
+      "roles/logging.admin",
+      "roles/iam.serviceAccountUser",
+      "roles/iap.tunnelResourceAccessor"
+    ]
+  }
 }
