@@ -61,6 +61,7 @@ module "bastion-vm" {
     addresses  = null
   }]
   service_account = module.gke_bastion_sa.email
+  service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
   tags = ["ssh"]
 }
 
