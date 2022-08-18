@@ -44,7 +44,7 @@ module "cluster_nodepool_1" {
   for_each                    = { for index, np in var.nodepools : np.name => np }
   project_id                  = var.globals.project_id
   cluster_name                = module.gke_cluster.name
-  location                    = each.value.location
+  location                    = var.cluster_location
   name                        = each.value.name
   node_service_account_create = true
 }
