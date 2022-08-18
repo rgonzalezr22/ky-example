@@ -119,7 +119,8 @@ module "iac-outputs-gcs" {
 
 # Enable services
 resource "google_project_service" "project" {
-  project = var.project_id
-  service = "cloudresourcemanager.googleapis.com"
+  for_each                   = toset(local.project_services)
+  project                    = var.project_id
+  service                    = each.key
   disable_dependent_services = true
 }

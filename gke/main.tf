@@ -61,6 +61,7 @@ module "bastion-vm" {
     addresses  = null
   }]
   service_account = module.gke_bastion_sa.email
+  tags = ["ssh"]
 }
 
 # Sergice account for bastions
