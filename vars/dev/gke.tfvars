@@ -10,4 +10,4 @@ nodepools=[
     }
 ]
 
-cluster_location = "us-central1-a"
+cluster_location = "us-central1"
