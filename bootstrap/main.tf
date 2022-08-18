@@ -93,7 +93,8 @@ module "iac-tf-sa" {
       "roles/storage.admin",
       "roles/logging.admin",
       "roles/iam.serviceAccountUser",
-      "roles/iam.serviceAccountAdmin"
+      "roles/iam.serviceAccountAdmin",
+      "roles/resourcemanager.projectIamAdmin"
     ]
   }
 }
@@ -114,4 +115,11 @@ module "iac-outputs-gcs" {
   name       = "iac-core-outputs"
   prefix     = local.prefix
   versioning = true
+}
+
+# Enable services
+resource "google_project_service" "project" {
+  project = var.project_id
+  service = "cloudresourcemanager.googleapis.com"
+  disable_dependent_services = true
 }
