@@ -36,6 +36,7 @@ module "gke_cluster" {
   labels = {
     environment = var.globals.env
   }
+  node_locations = local.cluster_node_locations
 }
 
 module "cluster_nodepool_1" {
