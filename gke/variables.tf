@@ -48,3 +48,9 @@ variable "nodepools" {
 variable "cluster_location" {
   type = string
 }
+
+variable "bastion"{
+  type = object({
+    instance_type = string 
+  })
+}

@@ -6,4 +6,8 @@ nodepools=[
     }
 ]
 
-cluster_location = "us-central1-a"
+cluster_location = "us-central1"
+
+bastion = {
+    instance_type = "e2-standard-2"
+}
