@@ -42,13 +42,13 @@ variable "network" {
 
 variable "cluster" {
   type = object({
-    location = string,
+    location          = string,
     nodepool_location = list(string)
   })
 }
 
-variable "bastion"{
+variable "bastion" {
   type = object({
-    instance_type = string 
+    instance_type = string
   })
 }
