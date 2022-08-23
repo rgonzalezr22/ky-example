@@ -1,12 +1,13 @@
 
-nodepools=[
-    {
-        location = "us-central1-c"
-        name = "pugsite-np-uc1c"
-    }
-]
 
-cluster_location = "us-central1"
+
+cluster = {
+    location = "us-central1",
+    nodepool_location = [
+        "us-central1-a",
+        "us-central1-b"
+    ]
+}
 
 bastion = {
     instance_type = "e2-standard-2"

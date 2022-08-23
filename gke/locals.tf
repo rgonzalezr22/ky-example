@@ -13,7 +13,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
- locals {
-    cluster_node_locations=[ for np in var.nodepools : np.location ]
- }

@@ -39,14 +39,12 @@ variable "network" {
   })
 }
 
-variable "nodepools" {
-  type = list(object({
+
+variable "cluster" {
+  type = object({
     location = string,
-    name     = string
-  }))
-}
-variable "cluster_location" {
-  type = string
+    nodepool_location = list(string)
+  })
 }
 
 variable "bastion"{
