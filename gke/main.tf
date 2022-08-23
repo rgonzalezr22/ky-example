@@ -103,3 +103,20 @@ module "gke_bastion_sa" {
     ]
   }
 }
+
+#Spinaker stuffs
+module "gke_bastion_sa" {
+  source      = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/iam-service-account"
+  project_id  = var.globals.project_id
+  name        = "gke-spinaker-sa"
+  description = ""
+  prefix      = var.globals.prefix
+  # allow SA used by CI/CD workflow to impersonate this SA
+  iam               = {}
+  iam_storage_roles = {}
+  iam_project_roles = {
+    (var.globals.project_id) = [
+      "roles/storage.admin"
+    ]
+  }
+}
