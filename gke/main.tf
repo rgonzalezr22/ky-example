@@ -59,10 +59,10 @@ module "bastion-vm" {
     nat        = false
     addresses  = null
   }]
-  service_account = module.gke_bastion_sa.email
-  instance_type = var.bastion.instance_type
+  service_account        = module.gke_bastion_sa.email
+  instance_type          = var.bastion.instance_type
   service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
-  tags = ["ssh"]
+  tags                   = ["ssh"]
 }
 
 # Startup script for bastion host
@@ -105,7 +105,7 @@ module "gke_bastion_sa" {
 }
 
 #Spinaker stuffs
-module "gke_bastion_sa" {
+module "gke_spinaker_sa" {
   source      = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/iam-service-account"
   project_id  = var.globals.project_id
   name        = "gke-spinaker-sa"
