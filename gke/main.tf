@@ -99,6 +99,7 @@ module "gke_bastion_sa" {
       "roles/storage.admin",
       "roles/logging.admin",
       "roles/iam.serviceAccountUser",
+      "roles/iam.serviceAccountKeyAdmin",
       "roles/iap.tunnelResourceAccessor"
     ]
   }
