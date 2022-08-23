@@ -117,7 +117,13 @@ module "gke_spinaker_sa" {
   iam_storage_roles = {}
   iam_project_roles = {
     (var.globals.project_id) = [
-      "roles/storage.admin"
+      "roles/compute.instanceAdmin.v1",
+      "roles/container.admin",
+      "roles/storage.admin",
+      "roles/logging.admin",
+      "roles/iam.serviceAccountUser",
+      "roles/iam.serviceAccountKeyAdmin",
+      "roles/iap.tunnelResourceAccessor"
     ]
   }
 }
