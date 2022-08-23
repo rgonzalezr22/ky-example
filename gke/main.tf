@@ -51,7 +51,7 @@ module "cluster_nodepool_1" {
 module "bastion-vm" {
   source     = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/compute-vm"
   project_id = var.globals.project_id
-  zone       = var.nodepools[0].location
+  zone       = var.cluster.nodepool_location[0]
   name       = "gke-bastion"
   network_interfaces = [{
     network    = var.network.vpc.self_link
