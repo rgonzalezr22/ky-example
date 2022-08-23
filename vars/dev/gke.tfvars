@@ -1,7 +1,7 @@
 
 
 
-gke_cluster = {
+cluster = {
     location = "us-central1",
     nodepool_location = [
         "us-central1-a",
