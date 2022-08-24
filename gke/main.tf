@@ -127,3 +127,16 @@ module "gke_spinaker_sa" {
     ]
   }
 }
+
+
+module "docker_artifact_registry" {
+  source     = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/artifact-registry"
+  project_id = var.globals.project_id
+  location   = "us-central1"
+  format     = "DOCKER"
+  id         = "docker"
+  iam = {
+    #"roles/artifactregistry.admin" = ["group:cicd@example.com"]
+  }
+}
+# tftest modules=1 resources=2

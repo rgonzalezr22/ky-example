@@ -18,7 +18,9 @@ locals {
   prefix = join("-", compact([var.prefix, var.env]))
   project_services = [
     "cloudresourcemanager.googleapis.com",
-    "iap.googleapis.com"
+    "iap.googleapis.com",
+    "artifactregistry.googleapis.com",
+    "cloudbuild.googleapis.com"
   ]
   identity_providers_defs = {
     # https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect
