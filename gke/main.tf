@@ -34,8 +34,8 @@ module "gke_cluster" {
     master_global_access    = false
   }
   dns_config = {
-    cluster_dns        = "clouddns"
-    cluster_dns_scope  = "cluster"
+    cluster_dns        = "CLOUD_DNS"
+    cluster_dns_scope  = "CLUSTER_SCOPE"
     cluster_dns_domain = null
 
   }
