@@ -33,12 +33,12 @@ module "gke_cluster" {
     master_ipv4_cidr_block  = "192.168.1.0/28" # var.network.vpc.subnet_secondary_ranges["us-central1/gke-uc1"].services
     master_global_access    = false
   }
-  dns_config = {
-    cluster_dns        = "CLOUD_DNS"
-    cluster_dns_scope  = "CLUSTER_SCOPE"
-    cluster_dns_domain = null
-
-  }
+  #Enable cluster dns
+  #dns_config = {
+  #  cluster_dns        = "CLOUD_DNS"
+  #  cluster_dns_scope  = "CLUSTER_SCOPE"
+  #  cluster_dns_domain = null
+  #}
   labels = {
     environment = var.globals.env
   }
