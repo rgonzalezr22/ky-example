@@ -36,6 +36,8 @@ module "gke_cluster" {
   dns_config = {
     cluster_dns        = "clouddns"
     cluster_dns_scope  = "cluster"
+    cluster_dns_domain = null
+
   }
   labels = {
     environment = var.globals.env
@@ -44,11 +46,11 @@ module "gke_cluster" {
 }
 
 module "cluster_nodepool_1" {
-  source                      = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/gke-nodepool"
-  project_id                  = var.globals.project_id
-  cluster_name                = module.gke_cluster.name
-  location                    = var.cluster.location
-  name                        = "${var.globals.prefix}-nodepool"
+  source               = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/gke-nodepool"
+  project_id           = var.globals.project_id
+  cluster_name         = module.gke_cluster.name
+  location             = var.cluster.location
+  name                 = "${var.globals.prefix}-nodepool"
   node_service_account = module.gke_nodepools_sa.email
 }
 
