@@ -45,7 +45,24 @@ module "cluster_nodepool_1" {
   cluster_name                = module.gke_cluster.name
   location                    = var.cluster.location
   name                        = "${var.globals.prefix}-nodepool"
-  node_service_account_create = true
+  node_service_account = module.gke_nodepools_sa.email
+}
+
+module "gke_nodepools_sa" {
+  source      = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/iam-service-account"
+  project_id  = var.globals.project_id
+  name        = "gke-nodepools-sa"
+  description = ""
+  prefix      = var.globals.prefix
+  # allow SA used by CI/CD workflow to impersonate this SA
+  iam               = {}
+  iam_storage_roles = {}
+  iam_project_roles = {
+    (var.globals.project_id) = [
+      "roles/artifactregistry.reader",
+      "roles/logging.logWriter",
+    ]
+  }
 }
 
 module "bastion-vm" {
@@ -65,22 +82,7 @@ module "bastion-vm" {
   tags                   = ["ssh"]
 }
 
-# Startup script for bastion host
-/*
-curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
-sudo apt-get install apt-transport-https --yes
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
-sudo apt-get update
-sudo apt-get install helm
-sudo apt-get install kubectl
-sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
-sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
-gcloud container clusters get-credentials pugsite-dev-gke-cluster --zone us-central1-a --project lgke-app-gke
-helm repo add bitnami https://charts.bitnami.com/bitnami
-curl -O https://raw.githubusercontent.com/spinnaker/halyard/master/install/debian/InstallHalyard.sh
-useradd -M spinaker
-sudo bash InstallHalyard.sh --user spinaker
-*/
+
 
 # Sergice account for bastions
 module "gke_bastion_sa" {

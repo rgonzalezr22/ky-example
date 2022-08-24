@@ -94,7 +94,8 @@ module "iac-tf-sa" {
       "roles/logging.admin",
       "roles/iam.serviceAccountUser",
       "roles/iam.serviceAccountAdmin",
-      "roles/resourcemanager.projectIamAdmin"
+      "roles/resourcemanager.projectIamAdmin",
+      "roles/artifactregistry.admin"
     ]
   }
 }
