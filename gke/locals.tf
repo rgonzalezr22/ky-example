@@ -13,10 +13,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-# Terraform docs re: configuring back end: https://www.terraform.io/docs/backends/types/gcs.html
-terraform {
-  backend "gcs" {
-    prefix = "terraform/network.tfstate"
-  }
-}
-

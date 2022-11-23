@@ -1,6 +1,6 @@
 
 
-prefix = "agus"
+prefix = "pugsite"
 project_id = "lgke-app-gke"
 env = "dev"
 cicd_repository = "imp14a/terraform-gcp-puginfra"

@@ -15,15 +15,18 @@
  */
 
 terraform {
-  required_version = ">= 1.1.0"
-  required_providers {
-    google = {
-      source  = "hashicorp/google"
-      version = ">= 4.20.0"
-    }
-    google-beta = {
-      source  = "hashicorp/google-beta"
-      version = ">= 4.20.0"
-    }
+  backend "gcs" {
+    bucket                      = "${bucket}"
+    impersonate_service_account = "${sa}"
   }
 }
+provider "google" {
+  impersonate_service_account = "${sa}"
+  project = "${project}"
+}
+provider "google-beta" {
+  impersonate_service_account = "${sa}"
+  project = "${project}"
+}
+
+# end backend.tf for

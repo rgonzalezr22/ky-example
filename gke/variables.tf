@@ -24,19 +24,31 @@ variable "globals" {
   })
 }
 
-variable "region" {
-  type = string
+variable "network" {
+  type = object({
+    vpc = object({
+      name                    = string,
+      self_link               = string,
+      subnet_ips              = any,
+      subnet_regions          = any,
+      subnet_secondary_ranges = any,
+      subnet_self_links       = any,
+    })
+    region       = string
+    admin_ranges = list(string)
+  })
 }
 
-variable "subnets" {
-  type = list(object({
-    ip_cidr_range      = string,
-    name               = string
-    region             = string
-    secondary_ip_range = any
-  }))
+
+variable "cluster" {
+  type = object({
+    location          = string,
+    nodepool_location = list(string)
+  })
 }
 
-variable "admin_ranges" {
-  type = list(string)
+variable "bastion" {
+  type = object({
+    instance_type = string
+  })
 }

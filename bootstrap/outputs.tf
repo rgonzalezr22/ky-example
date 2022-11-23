@@ -13,3 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+resource "google_storage_bucket_object" "providers" {
+  bucket  = module.iac-outputs-gcs.name
+  name    = "templates/backend.tf"
+  content = local.backend
+}
+
+resource "google_storage_bucket_object" "tfvars" {
+  bucket  = module.iac-outputs-gcs.name
+  name    = "tfvars/bootstrap.auto.tfvars.json"
+  content = jsonencode(local.tfvars_globals)
+}
+
+output "globals" {
+  value = local.tfvars_globals
+}
+
+
+/*resource "null_resource" "health_check" {
+
+ provisioner "local-exec" {
+    
+    command = "/bin/bash healthcheck.sh"
+  }
+}*/

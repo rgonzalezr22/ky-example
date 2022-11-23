@@ -16,6 +16,13 @@
 
 locals {
   prefix = join("-", compact([var.prefix, var.env]))
+  project_services = [
+    "cloudresourcemanager.googleapis.com",
+    "iap.googleapis.com",
+    "artifactregistry.googleapis.com",
+    "cloudbuild.googleapis.com",
+    "dns.googleapis.com"
+  ]
   identity_providers_defs = {
     # https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect
     github = {
@@ -38,4 +45,23 @@ locals {
       lookup(local.identity_providers_defs, v.issuer, {})
     )
   }
+
+  # Outputs
+  _tpl_backend = "${path.module}/templates/backend.tf.tpl"
+  backend = templatefile(local._tpl_backend, {
+    bucket  = module.iac-tf-gcs.name
+    sa      = module.iac-tf-sa.email
+    project = var.project_id
+  })
+
+  tfvars_globals = {
+    globals = {
+      project_id     = var.project_id
+      project_number = data.google_project.project.number
+      prefix         = local.prefix
+      env            = var.env
+      output_bucket  = module.iac-outputs-gcs.name
+    }
+  }
+
 }

@@ -44,15 +44,6 @@ resource "google_iam_workload_identity_pool_provider" "default" {
   }
 }
 
-//state bucket
-module "iac-tf-gcs" {
-  source     = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/gcs"
-  project_id = var.project_id
-  name       = "iac-core-tf"
-  prefix     = local.prefix
-  versioning = true
-}
-
 # SAs used by CI/CD workflows to impersonate automation SAs
 module "iac-sa-impersonate" {
   source      = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/iam-service-account"
@@ -74,9 +65,9 @@ module "iac-sa-impersonate" {
   iam_project_roles = {
     (var.project_id) = ["roles/logging.logWriter"]
   }
-  #iam_storage_roles = {
-  #  (module.automation-tf-output-gcs.name) = ["roles/storage.objectViewer"]
-  #}
+  iam_storage_roles = {
+    (module.iac-outputs-gcs.name) = ["roles/storage.objectViewer"]
+  }
 }
 
 module "iac-tf-sa" {
@@ -87,11 +78,50 @@ module "iac-tf-sa" {
   prefix      = local.prefix
   # allow SA used by CI/CD workflow to impersonate this SA
   iam = {
-    "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.iac-sa-impersonate.iam_email, null)
-    ])
+    "roles/iam.serviceAccountTokenCreator" = [module.iac-sa-impersonate.iam_email]
   }
   iam_storage_roles = {
     (module.iac-tf-gcs.name) = ["roles/storage.admin"]
   }
+  iam_project_roles = {
+    (var.project_id) = ["roles/compute.instanceAdmin.v1",
+      "roles/compute.loadBalancerAdmin",
+      "roles/compute.networkAdmin",
+      "roles/compute.securityAdmin",
+      "roles/container.admin",
+      "roles/monitoring.admin",
+      "roles/storage.admin",
+      "roles/logging.admin",
+      "roles/iam.serviceAccountUser",
+      "roles/iam.serviceAccountAdmin",
+      "roles/resourcemanager.projectIamAdmin",
+      "roles/artifactregistry.admin"
+    ]
+  }
+}
+
+//state bucket
+module "iac-tf-gcs" {
+  source     = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/gcs"
+  project_id = var.project_id
+  name       = "iac-core-tf"
+  prefix     = local.prefix
+  versioning = true
+}
+
+//state bucket
+module "iac-outputs-gcs" {
+  source     = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/gcs"
+  project_id = var.project_id
+  name       = "iac-core-outputs"
+  prefix     = local.prefix
+  versioning = true
+}
+
+# Enable services
+resource "google_project_service" "project" {
+  for_each                   = toset(local.project_services)
+  project                    = var.project_id
+  service                    = each.key
+  disable_dependent_services = true
 }

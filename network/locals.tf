@@ -15,5 +15,19 @@
  */
 
 locals {
-  prefix = join("-", compact([var.prefix, var.env]))
+  prefix = var.globals.prefix
+  tfvars_network = {
+    network = {
+      vpc = {
+         name = module.vpc.name,
+         self_link = module.vpc.self_link
+         subnet_ips = module.vpc.subnet_ips
+         subnet_regions= module.vpc.subnet_regions
+         subnet_secondary_ranges = module.vpc.subnet_secondary_ranges
+         subnet_self_links = module.vpc.subnet_self_links
+      }
+      region = var.region
+      admin_ranges = var.admin_ranges
+    }
+  }
 }

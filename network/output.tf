@@ -13,6 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-output "vpc_name" {
-  value = module.vpc.name
+
+resource "google_storage_bucket_object" "tfvars" {
+  bucket  = var.globals.output_bucket
+  name    = "tfvars/network.auto.tfvars.json"
+  content = jsonencode(local.tfvars_network)
+}
+
+output "network" {
+  value = local.tfvars_network
 }
