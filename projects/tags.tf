@@ -14,16 +14,8 @@
  * limitations under the License.
  */
 
-terraform {
-  required_version = ">= 1.1.0"
-  required_providers {
-    google = {
-      source  = "hashicorp/google"
-      version = ">= 4.20.0"
-    }
-    google-beta = {
-      source  = "hashicorp/google-beta"
-      version = ">= 4.20.0"
-    }
-  }
+resource "google_tags_tag_binding" "binding" {
+  for_each  = coalesce(var.tag_bindings, {})
+  parent    = "//cloudresourcemanager.googleapis.com/projects/${local.project.number}"
+  tag_value = each.value
 }
