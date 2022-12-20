@@ -1,9 +1,7 @@
-
-
-prefix = "pugsite"
-project_id = "lgke-app-gke"
+prefix = "rgrsite"
+project_id = "sandbox-rgr"
 env = "dev"
-cicd_repository = "imp14a/terraform-gcp-puginfra"
+cicd_repository = "rgonzalezr22/ky-example"
 
 federated_identity_providers = {
   github-fip = {
