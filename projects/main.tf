@@ -180,7 +180,7 @@ module "vpn_ha_onprem" {
   }
 }
 
-#VPN Gateway for hubs
+/* #VPN Gateway for hubs
 resource "google_compute_ha_vpn_gateway" "ha_gateway1" {
   provider = google-beta
   region   = "us-central1"
@@ -188,7 +188,7 @@ resource "google_compute_ha_vpn_gateway" "ha_gateway1" {
   network  = "shared-vpc"
   project  = "${var.prefix}-hub-of-hubs"
 }
-
+ */
 /* #HA VPN to Itaka Hub
 module "hub-to-itaka-vpn" {
   source     = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpn-ha"
