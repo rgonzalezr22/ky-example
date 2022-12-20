@@ -68,11 +68,9 @@ variable "project_services" {
   default = [
     "cloudresourcemanager.googleapis.com",
     "iap.googleapis.com",
-    "artifactregistry.googleapis.com",
     "cloudbuild.googleapis.com",
     "dns.googleapis.com",
-    "container.googleapis.com",
-    "stackdriver.googleapis.com",
+    "stackdriver.googleapis.com"
   ]
 }
 
