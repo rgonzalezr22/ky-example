@@ -94,21 +94,6 @@ variable "name" {
   default     = "vpn-gtw-1"
 }
 
-/* variable "peer_gateway" {
-  description = "Configuration of the (external or GCP) peer gateway."
-  type = object({
-    external = optional(object({
-      redundancy_type = string
-      interfaces      = list(string)
-    }))
-    gcp = optional(string)
-  })
-  nullable = false
-  validation {
-    condition     = (var.peer_gateway.external != null) != (var.peer_gateway.gcp != null)
-    error_message = "Peer gateway configuration must define exactly one between `external` and `gcp`."
-  }
-} */
 variable "shared_vpc_host_config" {
   description = "Configures this project as a Shared VPC host project (mutually exclusive with shared_vpc_service_project)."
   type = object({
@@ -124,56 +109,36 @@ variable "project_id" {
   default     = "sandbox-rgr"
 }
 
-/* variable "router_config" {
-  description = "Cloud Router configuration for the VPN. If you want to reuse an existing router, set create to false and use name to specify the desired router."
-  type = object({
-    create    = optional(bool, true)
-    asn       = number
-    name      = optional(string)
-    keepalive = optional(number)
-    custom_advertise = optional(object({
-      all_subnets = bool
-      ip_ranges   = map(string)
-    }))
-  })
-  nullable = false
-}
-
-variable "tunnels" {
-  description = "VPN tunnel configurations."
-  type = map(object({
-    bgp_peer = object({
-      address        = string
-      asn            = number
-      route_priority = optional(number, 1000)
-      custom_advertise = optional(object({
-        all_subnets          = bool
-        all_vpc_subnets      = bool
-        all_peer_vpc_subnets = bool
-        ip_ranges            = map(string)
-      }))
-    })
-    # each BGP session on the same Cloud Router must use a unique /30 CIDR
-    # from the 169.254.0.0/16 block.
-    bgp_session_range               = string
-    ike_version                     = optional(number, 2)
-    peer_external_gateway_interface = optional(number)
-    router                          = optional(string)
-    shared_secret                   = optional(string)
-    vpn_gateway_interface           = number
-  }))
-  default  = {}
-  nullable = false
-}
-
-variable "vpn_gateway" {
-  description = "HA VPN Gateway Self Link for using an existing HA VPN Gateway. Ignored if `vpn_gateway_create` is set to `true`."
-  type        = string
-  default     = null
-}
-
 variable "vpn_gateway_create" {
   description = "Create HA VPN Gateway."
   type        = bool
   default     = true
-} */
+}
+
+variable "vpn_configs" {
+  description = "VPN configurations."
+  type = map(object({
+    asn           = number
+    custom_ranges = map(string)
+  }))
+  default = {
+    hub-hubs-vpn = {
+      asn = 64513
+      custom_ranges = {
+        "10.0.0.0/8" = "internal default"
+      }
+    }
+    itaka-vpn = {
+      asn           = 64514
+      custom_ranges = null
+    }
+    dc-vpn = {
+      asn           = 64515
+      custom_ranges = null
+    }
+    avicena-vpn = {
+      asn           = 64516
+      custom_ranges = null
+    }
+  }
+}

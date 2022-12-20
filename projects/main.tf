@@ -131,76 +131,132 @@ module "vpc-shared-firewall" {
   }
 }
 
-module "nat" {
+/* module "nat" {
   source         = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-cloudnat"
   project_id     = module.project-host.project_id
   region         = var.region
   name           = "vpc-shared"
   router_create  = true
   router_network = module.vpc-shared.name
-}
+} */
 
-/* module "vpn-1" {
-  source       = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpn-ha"
-  project_id   = var.project_id
-  region       = var.region
-  network      = var.vpc1.self_link
-  name         = "net1-to-net-2"
-  peer_gateway = { gcp = module.vpn-2.self_link }
-  router_config = {
-    asn = 64514
-    custom_advertise = {
-      all_subnets = true
-      ip_ranges = {
-        "10.0.0.0/8" = "default"
-      }
+
+######## VPN #########
+#VPN to on-prem
+module "vpn_ha_onprem" {
+  source     = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpn-ha"
+  project_id = module.project-host.project_id
+  region     = var.region
+  network    = module.vpc-shared.name
+  name       = "gcp-to-onprem"
+  peer_gateway = {
+    external = {
+      redundancy_type = "SINGLE_IP_INTERNALLY_REDUNDANT"
+      interfaces      = ["8.8.8.8"] # on-prem router ip address
     }
   }
+  router_config = { asn = 64514 }
   tunnels = {
     remote-0 = {
       bgp_peer = {
         address = "169.254.1.1"
         asn     = 64513
       }
-      bgp_session_range     = "169.254.1.2/30"
-      vpn_gateway_interface = 0
+      bgp_session_range               = "169.254.1.2/30"
+      peer_external_gateway_interface = 0
+      shared_secret                   = "mySecret"
+      vpn_gateway_interface           = 0
     }
     remote-1 = {
       bgp_peer = {
         address = "169.254.2.1"
         asn     = 64513
       }
-      bgp_session_range     = "169.254.2.2/30"
+      bgp_session_range               = "169.254.2.2/30"
+      peer_external_gateway_interface = 0
+      shared_secret                   = "mySecret"
+      vpn_gateway_interface           = 1
+    }
+  }
+}
+
+#VPN Gateway for hubs
+resource "google_compute_ha_vpn_gateway" "ha_gateway1" {
+  provider = google-beta
+  region   = "us-central1"
+  name     = "ha-vpn-gtw1"
+  network  = "shared-vpc"
+  project  = "${var.prefix}-hub-of-hubs"
+}
+
+/* #HA VPN to Itaka Hub
+module "hub-to-itaka-vpn" {
+  source     = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpn-ha"
+  project_id = var.project_id
+  network    = module.vpc-shared.self_link
+  region     = var.region
+  name       = "${var.prefix}-hub-to-itaka-vpn"
+  # router is created and managed by the production VPN module
+  # so we don't configure advertisements here
+  router_config = {
+    create = false
+    name   = "${var.prefix}-cr-hub-to-itaka"
+    asn    = 64514
+  }
+  peer_gateway = { gcp = module.itaka-to-hub-vpn.self_link }
+  tunnels = {
+    0 = {
+      bgp_peer = {
+        address = "169.254.2.2"
+        asn     = var.vpn_configs.itaka-vpn.asn
+      }
+      bgp_session_range     = "169.254.2.1/30"
+      vpn_gateway_interface = 0
+    }
+    1 = {
+      bgp_peer = {
+        address = "169.254.2.6"
+        asn     = var.vpn_configs.itaka-vpn.asn
+      }
+      bgp_session_range     = "169.254.2.5/30"
       vpn_gateway_interface = 1
     }
   }
 }
 
-module "vpn-2" {
-  source        = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpn-ha"
-  project_id    = var.project_id
-  region        = var.region
-  network       = var.vpc2.self_link
-  name          = "net2-to-net1"
-  router_config = { asn = 64513 }
-  peer_gateway  = { gcp = module.vpn-1.self_link }
+module "itaka-to-hub-vpn" {
+  source     = "git::https://github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpn-ha"
+  project_id = var.project_id
+  network    = module.dev-vpc.self_link
+  region     = var.regions.r1
+  name       = "${var.prefix}-dev-to-lnd-r1"
+  router_config = {
+    name = "${var.prefix}-dev-vpn-r1"
+    asn  = var.vpn_configs.dev-r1.asn
+    custom_advertise = {
+      all_subnets = false
+      ip_ranges   = coalesce(var.vpn_configs.dev-r1.custom_ranges, {})
+      mode        = "CUSTOM"
+    }
+  }
+  peer_gateway = { gcp = module.landing-to-dev-vpn-r1.self_link }
   tunnels = {
-    remote-0 = {
+    0 = {
       bgp_peer = {
-        address = "169.254.1.2"
-        asn     = 64514
+        address = "169.254.2.1"
+        asn     = var.vpn_configs.land-r1.asn
       }
-      bgp_session_range     = "169.254.1.1/30"
-      shared_secret         = module.vpn-1.random_secret
+      bgp_session_range     = "169.254.2.2/30"
+      shared_secret         = module.landing-to-dev-vpn-r1.random_secret
       vpn_gateway_interface = 0
     }
-    remote-1 = {
+    1 = {
       bgp_peer = {
-        address = "169.254.2.2"
-        asn     = 64514
+        address = "169.254.2.5"
+        asn     = var.vpn_configs.land-r1.asn
       }
-      bgp_session_range     = "169.254.2.1/30"
-      shared_secret         = module.vpn-1.random_secret
+      bgp_session_range     = "169.254.2.6/30"
+      shared_secret         = module.landing-to-dev-vpn-r1.random_secret
       vpn_gateway_interface = 1
     }
   }
