@@ -20,259 +20,95 @@ variable "auto_create_network" {
   default     = false
 }
 
-variable "billing_account" {
+variable "billing_account_id" {
   description = "Billing account id."
   type        = string
-  default     = null
+  default     = "01E654-CF45ED-8F2561"
 }
 
-variable "contacts" {
-  description = "List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "custom_roles" {
-  description = "Map of role name => list of permissions to create in this project."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "default_service_account" {
-  description = "Project default service account setting: can be one of `delete`, `deprivilege`, `disable`, or `keep`."
-  default     = "keep"
-  type        = string
-}
-
-variable "descriptive_name" {
-  description = "Name of the project name. Used for project name instead of `name` variable."
-  type        = string
-  default     = null
-}
-
-variable "group_iam" {
-  description = "Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam" {
-  description = "IAM bindings in {ROLE => [MEMBERS]} format."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam_additive" {
-  description = "IAM additive bindings in {ROLE => [MEMBERS]} format."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam_additive_members" {
-  description = "IAM additive bindings in {MEMBERS => [ROLE]} format. This might break if members are dynamic values."
-  type        = map(list(string))
-  default     = {}
-}
-
-variable "labels" {
-  description = "Resource labels."
+variable "ip_ranges" {
+  description = "Subnet IP CIDR ranges."
   type        = map(string)
-  default     = {}
-  nullable    = false
-}
-
-variable "lien_reason" {
-  description = "If non-empty, creates a project lien with this description."
-  type        = string
-  default     = ""
-}
-
-variable "logging_exclusions" {
-  description = "Logging exclusions for this project in the form {NAME -> FILTER}."
-  type        = map(string)
-  default     = {}
-  nullable    = false
-}
-
-variable "logging_sinks" {
-  description = "Logging sinks to create for this project."
-  type = map(object({
-    bq_partitioned_table = optional(bool)
-    description          = optional(string)
-    destination          = string
-    disabled             = optional(bool, false)
-    exclusions           = optional(map(string), {})
-    filter               = string
-    iam                  = optional(bool, true)
-    type                 = string
-    unique_writer        = optional(bool)
-  }))
-  default  = {}
-  nullable = false
-  validation {
-    condition = alltrue([
-      for k, v in var.logging_sinks :
-      contains(["bigquery", "logging", "pubsub", "storage"], v.type)
-    ])
-    error_message = "Type must be one of 'bigquery', 'logging', 'pubsub', 'storage'."
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.logging_sinks :
-      v.bq_partitioned_table != true || v.type == "bigquery"
-    ])
-    error_message = "Can only set bq_partitioned_table when type is `bigquery`."
-  }
-}
-
-variable "metric_scopes" {
-  description = "List of projects that will act as metric scopes for this project."
-  type        = list(string)
-  default     = []
-  nullable    = false
-}
-
-variable "name" {
-  description = "Project name and id suffix."
-  type        = string
-}
-
-variable "org_policies" {
-  description = "Organization policies applied to this project keyed by policy name."
-  type = map(object({
-    inherit_from_parent = optional(bool) # for list policies only.
-    reset               = optional(bool)
-
-    # default (unconditional) values
-    allow = optional(object({
-      all    = optional(bool)
-      values = optional(list(string))
-    }))
-    deny = optional(object({
-      all    = optional(bool)
-      values = optional(list(string))
-    }))
-    enforce = optional(bool, true) # for boolean policies only.
-
-    # conditional values
-    rules = optional(list(object({
-      allow = optional(object({
-        all    = optional(bool)
-        values = optional(list(string))
-      }))
-      deny = optional(object({
-        all    = optional(bool)
-        values = optional(list(string))
-      }))
-      enforce = optional(bool, true) # for boolean policies only.
-      condition = object({
-        description = optional(string)
-        expression  = optional(string)
-        location    = optional(string)
-        title       = optional(string)
-      })
-    })), [])
-  }))
-  default  = {}
-  nullable = false
-}
-
-variable "org_policies_data_path" {
-  description = "Path containing org policies in YAML format."
-  type        = string
-  default     = null
-}
-
-variable "oslogin" {
-  description = "Enable OS Login."
-  type        = bool
-  default     = false
-}
-
-variable "oslogin_admins" {
-  description = "List of IAM-style identities that will be granted roles necessary for OS Login administrators."
-  type        = list(string)
-  default     = []
-  nullable    = false
-
-}
-
-variable "oslogin_users" {
-  description = "List of IAM-style identities that will be granted roles necessary for OS Login users."
-  type        = list(string)
-  default     = []
-  nullable    = false
-}
-
-variable "parent" {
-  description = "Parent folder or organization in 'folders/folder_id' or 'organizations/org_id' format."
-  type        = string
-  default     = null
-  validation {
-    condition     = var.parent == null || can(regex("(organizations|folders)/[0-9]+", var.parent))
-    error_message = "Parent must be of the form folders/folder_id or organizations/organization_id."
+  default = {
+    oshift_prod    = "10.0.16.0/24"
+    oshift_nonprod = "10.0.32.0/24"
   }
 }
 
 variable "prefix" {
-  description = "Optional prefix used to generate project id and name."
+  description = "Prefix used for resource names."
   type        = string
-  default     = null
   validation {
     condition     = var.prefix != ""
-    error_message = "Prefix cannot be empty, please use null instead."
+    error_message = "Prefix cannot be empty."
   }
 }
 
-variable "project_create" {
-  description = "Create project. When set to false, uses a data source to reference existing project."
-  type        = bool
-  default     = true
-}
-
-variable "service_config" {
-  description = "Configure service API activation."
-  type = object({
-    disable_on_destroy         = bool
-    disable_dependent_services = bool
-  })
-  default = {
-    disable_on_destroy         = false
-    disable_dependent_services = false
-  }
-}
-
-variable "service_encryption_key_ids" {
-  description = "Cloud KMS encryption key in {SERVICE => [KEY_URL]} format."
-  type        = map(list(string))
-  default     = {}
-}
-
-# accessPolicies/ACCESS_POLICY_NAME/servicePerimeters/PERIMETER_NAME
-variable "service_perimeter_bridges" {
-  description = "Name of VPC-SC Bridge perimeters to add project into. See comment in the variables file for format."
-  type        = list(string)
-  default     = null
-}
-
-# accessPolicies/ACCESS_POLICY_NAME/servicePerimeters/PERIMETER_NAME
-variable "service_perimeter_standard" {
-  description = "Name of VPC-SC Standard perimeter to add project into. See comment in the variables file for format."
-  type        = string
-  default     = null
-}
-
-variable "services" {
-  description = "Service APIs to enable."
+variable "owners_oshift_prod" {
+  description = "OShift Prod project owners, in IAM format."
   type        = list(string)
   default     = []
 }
 
+variable "owners_oshift_nonprod" {
+  description = "Oshift Non Prod project owners, in IAM format."
+  type        = list(string)
+  default     = []
+}
+
+variable "owners_host_project" {
+  description = "Host project for Hub of Hubs owners, in IAM format."
+  type        = list(string)
+  default     = []
+}
+
+variable "project_services" {
+  description = "Service APIs enabled by default in new projects."
+  type        = list(string)
+  default = [
+    "cloudresourcemanager.googleapis.com",
+    "iap.googleapis.com",
+    "artifactregistry.googleapis.com",
+    "cloudbuild.googleapis.com",
+    "dns.googleapis.com",
+    "container.googleapis.com",
+    "stackdriver.googleapis.com",
+  ]
+}
+
+variable "region" {
+  description = "Region used."
+  type        = string
+  default     = "us-central1"
+}
+
+variable "root_node" {
+  description = "Hierarchy node where projects will be created, 'organizations/org_id' or 'folders/folder_id'."
+  type        = string
+  default     = "organizations/737340371464"
+}
+
+variable "name" {
+  description = "VPN Gateway name (if an existing VPN Gateway is not used), and prefix used for dependent resources."
+  type        = string
+  default     = "vpn-gtw-1"
+}
+
+/* variable "peer_gateway" {
+  description = "Configuration of the (external or GCP) peer gateway."
+  type = object({
+    external = optional(object({
+      redundancy_type = string
+      interfaces      = list(string)
+    }))
+    gcp = optional(string)
+  })
+  nullable = false
+  validation {
+    condition     = (var.peer_gateway.external != null) != (var.peer_gateway.gcp != null)
+    error_message = "Peer gateway configuration must define exactly one between `external` and `gcp`."
+  }
+} */
 variable "shared_vpc_host_config" {
   description = "Configures this project as a Shared VPC host project (mutually exclusive with shared_vpc_service_project)."
   type = object({
@@ -282,24 +118,62 @@ variable "shared_vpc_host_config" {
   default = null
 }
 
-variable "shared_vpc_service_config" {
-  description = "Configures this project as a Shared VPC service project (mutually exclusive with shared_vpc_host_config)."
-  # the list of valid service identities is in service-accounts.tf
+variable "project_id" {
+  description = "Project where resources will be created."
+  type        = string
+  default     = "sandbox-rgr"
+}
+
+/* variable "router_config" {
+  description = "Cloud Router configuration for the VPN. If you want to reuse an existing router, set create to false and use name to specify the desired router."
   type = object({
-    host_project         = string
-    service_identity_iam = optional(map(list(string)))
+    create    = optional(bool, true)
+    asn       = number
+    name      = optional(string)
+    keepalive = optional(number)
+    custom_advertise = optional(object({
+      all_subnets = bool
+      ip_ranges   = map(string)
+    }))
   })
-  default = null
+  nullable = false
 }
 
-variable "skip_delete" {
-  description = "Allows the underlying resources to be destroyed without destroying the project itself."
-  type        = bool
-  default     = false
+variable "tunnels" {
+  description = "VPN tunnel configurations."
+  type = map(object({
+    bgp_peer = object({
+      address        = string
+      asn            = number
+      route_priority = optional(number, 1000)
+      custom_advertise = optional(object({
+        all_subnets          = bool
+        all_vpc_subnets      = bool
+        all_peer_vpc_subnets = bool
+        ip_ranges            = map(string)
+      }))
+    })
+    # each BGP session on the same Cloud Router must use a unique /30 CIDR
+    # from the 169.254.0.0/16 block.
+    bgp_session_range               = string
+    ike_version                     = optional(number, 2)
+    peer_external_gateway_interface = optional(number)
+    router                          = optional(string)
+    shared_secret                   = optional(string)
+    vpn_gateway_interface           = number
+  }))
+  default  = {}
+  nullable = false
 }
 
-variable "tag_bindings" {
-  description = "Tag bindings for this project, in key => tag value id format."
-  type        = map(string)
+variable "vpn_gateway" {
+  description = "HA VPN Gateway Self Link for using an existing HA VPN Gateway. Ignored if `vpn_gateway_create` is set to `true`."
+  type        = string
   default     = null
 }
+
+variable "vpn_gateway_create" {
+  description = "Create HA VPN Gateway."
+  type        = bool
+  default     = true
+} */

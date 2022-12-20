@@ -14,81 +14,86 @@
  * limitations under the License.
  */
 
-output "custom_roles" {
-  description = "Ids of the created custom roles."
+output "projects" {
+  description = "Project ids."
   value = {
-    for name, role in google_project_iam_custom_role.roles :
-    name => role.id
+    proj-hub-host-project   = module.project-host.project_id
+    proj-svc-oshift-prod    = module.project-svc-oshift-prod.project_id
+    proj-svc-oshift-nonprod = module.project-svc-oshift-nonprod.project_id
   }
+}
+
+output "vpc" {
+  description = "Hub of Hubs Shared VPC"
+  value = {
+    name    = module.vpc-shared.name
+    subnets = module.vpc-shared.subnet_ips
+  }
+}
+
+/* 
+output "bgp_peers" {
+  description = "BGP peer resources."
+  value = {
+    for k, v in google_compute_router_peer.bgp_peer : k => v
+  }
+}
+
+output "external_gateway" {
+  description = "External VPN gateway resource."
+  value       = one(google_compute_external_vpn_gateway.external_gateway[*])
+}
+
+output "gateway" {
+  description = "VPN gateway resource (only if auto-created)."
+  value       = one(google_compute_ha_vpn_gateway.ha_gateway[*])
 }
 
 output "name" {
-  description = "Project name."
-  value       = local.project.name
-  depends_on = [
-    google_org_policy_policy.default,
-    google_project_service.project_services,
-    google_compute_shared_vpc_service_project.service_projects,
-    google_project_iam_member.shared_vpc_host_robots,
-    google_kms_crypto_key_iam_member.service_identity_cmek
-  ]
+  description = "VPN gateway name (only if auto-created). ."
+  value       = one(google_compute_ha_vpn_gateway.ha_gateway[*].name)
 }
 
-output "number" {
-  description = "Project number."
-  value       = local.project.number
-  depends_on = [
-    google_org_policy_policy.default,
-    google_project_service.project_services,
-    google_compute_shared_vpc_host_project.shared_vpc_host,
-    google_compute_shared_vpc_service_project.shared_vpc_service,
-    google_compute_shared_vpc_service_project.service_projects,
-    google_project_iam_member.shared_vpc_host_robots,
-    google_kms_crypto_key_iam_member.service_identity_cmek,
-    google_project_service_identity.jit_si,
-    google_project_service_identity.servicenetworking,
-    google_project_iam_member.servicenetworking
-  ]
+output "random_secret" {
+  description = "Generated secret."
+  value       = local.secret
 }
 
-output "project_id" {
-  description = "Project id."
-  value       = "${local.prefix}${var.name}"
-  depends_on = [
-    google_project.project,
-    data.google_project.project,
-    google_org_policy_policy.default,
-    google_project_service.project_services,
-    google_compute_shared_vpc_host_project.shared_vpc_host,
-    google_compute_shared_vpc_service_project.shared_vpc_service,
-    google_compute_shared_vpc_service_project.service_projects,
-    google_project_iam_member.shared_vpc_host_robots,
-    google_kms_crypto_key_iam_member.service_identity_cmek,
-    google_project_service_identity.jit_si,
-    google_project_service_identity.servicenetworking,
-    google_project_iam_member.servicenetworking
-  ]
+output "router" {
+  description = "Router resource (only if auto-created)."
+  value       = one(google_compute_router.router[*])
 }
 
-output "service_accounts" {
-  description = "Product robot service accounts in project."
+output "router_name" {
+  description = "Router name."
+  value       = local.router
+}
+
+output "self_link" {
+  description = "HA VPN gateway self link."
+  value       = local.vpn_gateway
+}
+
+output "tunnel_names" {
+  description = "VPN tunnel names."
   value = {
-    cloud_services = local.service_account_cloud_services
-    default        = local.service_accounts_default
-    robots         = local.service_accounts_robots
-  }
-  depends_on = [
-    google_project_service.project_services,
-    google_kms_crypto_key_iam_member.service_identity_cmek,
-    google_project_service_identity.jit_si,
-    data.google_bigquery_default_service_account.bq_sa,
-    data.google_storage_project_service_account.gcs_sa
-  ]
-}
-
-output "sink_writer_identities" {
-  description = "Writer identities created for each sink."
-  value = {
-    for name, sink in google_logging_project_sink.sink : name => sink.writer_identity
+    for name in keys(var.tunnels) :
+    name => try(google_compute_vpn_tunnel.tunnels[name].name, null)
   }
 }
+
+output "tunnel_self_links" {
+  description = "VPN tunnel self links."
+  value = {
+    for name in keys(var.tunnels) :
+    name => try(google_compute_vpn_tunnel.tunnels[name].self_link, null)
+  }
+}
+
+output "tunnels" {
+  description = "VPN tunnel resources."
+  value = {
+    for name in keys(var.tunnels) :
+    name => try(google_compute_vpn_tunnel.tunnels[name], null)
+  }
+} */
