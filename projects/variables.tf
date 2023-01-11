@@ -23,7 +23,7 @@ variable "auto_create_network" {
 variable "billing_account_id" {
   description = "Billing account id."
   type        = string
-  default     = "01E654-CF45ED-8F2561"
+  default     = "01E654-CF45ED-8F2561"  
 }
 
 variable "ip_ranges" {
@@ -59,7 +59,7 @@ variable "owners_oshift_nonprod" {
 variable "owners_host_project" {
   description = "Host project for Hub of Hubs owners, in IAM format."
   type        = list(string)
-  default     = []
+  default     = ["sebastian@gcpsandbox.cloud"]
 }
 
 variable "project_services" {

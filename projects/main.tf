@@ -32,7 +32,7 @@ module "project-host" {
     enabled = true
   }
   iam = {
-    "roles/owner" = var.owners_host_project
+    "roles/owner" = ["user:var.owners_host_project[0]"]
   }
 }
 
@@ -52,7 +52,7 @@ module "project-svc-oshift-prod" {
     }
   }
   iam = {
-    "roles/owner" = var.owners_oshift_prod
+    "roles/owner" = ["user:var.owners_oshift_prod[0]"]
   }
 }
 
@@ -70,6 +70,9 @@ module "project-svc-oshift-nonprod" {
     service_identity_iam = {
       "roles/compute.networkUser" = ["cloudservices"]
     }
+  }
+  iam = {
+    "roles/owner" = ["user:var.owners_oshift_nonprod[0]"]
   }
 }
 module "project-gcve" {
