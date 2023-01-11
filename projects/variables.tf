@@ -24,7 +24,7 @@ variable "billing_account_id" {
   description = "Billing account id."
   type        = string
   default     = "01E654-CF45ED-8F2561"
-}
+  }
 
 variable "ip_ranges" {
   description = "Subnet IP CIDR ranges."
